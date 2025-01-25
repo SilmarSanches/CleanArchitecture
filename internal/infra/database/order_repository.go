@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/devfullcycle/20-CleanArch/internal/entity"
 )
@@ -42,4 +43,28 @@ func (r *OrderRepository) GetByID(id string) (*entity.Order, error) {
 		return nil, err
 	}
 	return &order, nil
+}
+
+func (r *OrderRepository) GetAll() ([]entity.Order, error) {
+	rows, err := r.Db.Query("SELECT id, price, tax, final_price FROM orders")
+	if err != nil {
+		return nil, err
+	}
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			log.Printf("Error closing rows: %v", err)
+		}
+	}(rows)
+
+	var orders []entity.Order
+	for rows.Next() {
+		var order entity.Order
+		err := rows.Scan(&order.ID, &order.Price, &order.Tax, &order.FinalPrice)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, order)
+	}
+	return orders, nil
 }
