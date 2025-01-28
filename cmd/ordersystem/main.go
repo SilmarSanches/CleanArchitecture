@@ -58,13 +58,20 @@ func main() {
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
-	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	eventDispatcher.Register("OrderGet", &handler.OrderGetHandler{
+		RabbitMQChannel: rabbitMQChannel,
+	})
 
-	webserver := webserver.NewWebServer(configs.WebServerPort)
+	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	//getOrdersUSeCase := NewGetOrdersUseCase(db, eventDispatcher)
+
+	httpServer := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
-	webserver.AddHandler("/order", webOrderHandler.Create)
+	getOrderHandler := NewGetOrdersHandler(db, eventDispatcher)
+	httpServer.AddHandler("/order", webOrderHandler.Create)
+	httpServer.AddHandler("/orders/all", getOrderHandler.GetAll)
 	fmt.Println("Starting web server on port", configs.WebServerPort)
-	go webserver.Start()
+	go httpServer.Start()
 
 	grpcServer := grpc.NewServer()
 	createOrderService := service.NewOrderService(*createOrderUseCase)

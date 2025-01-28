@@ -7,23 +7,23 @@ import (
 
 type GetOrdersUseCase struct {
 	OrderRepository entity.OrderRepositoryInterface
-	OrderCreated    events.EventInterface
+	OrderGet        events.EventInterface
 	EventDispatcher events.EventDispatcherInterface
 }
 
 func NewGetOrdersUseCase(
 	OrderRepository entity.OrderRepositoryInterface,
-	OrderCreated events.EventInterface,
+	OrderGets events.EventInterface,
 	EventDispatcher events.EventDispatcherInterface,
 ) *GetOrdersUseCase {
 	return &GetOrdersUseCase{
 		OrderRepository: OrderRepository,
-		OrderCreated:    OrderCreated,
+		OrderGet:        OrderGets,
 		EventDispatcher: EventDispatcher,
 	}
 }
 
-func (c *GetOrdersUseCase) Execute() ([]OrderInputDTO, error) {
+func (c *GetOrdersUseCase) GetAll() ([]OrderInputDTO, error) {
 	orders, err := c.OrderRepository.GetAll()
 	if err != nil {
 		return nil, err
@@ -38,6 +38,9 @@ func (c *GetOrdersUseCase) Execute() ([]OrderInputDTO, error) {
 		}
 		orderDTOs = append(orderDTOs, orderDTO)
 	}
+
+	c.OrderGet.SetPayload(orderDTOs)
+	c.EventDispatcher.Dispatch(c.OrderGet)
 
 	return orderDTOs, nil
 }
