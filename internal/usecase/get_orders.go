@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"github.com/devfullcycle/20-CleanArch/internal/entity"
 	"github.com/devfullcycle/20-CleanArch/pkg/events"
 )
@@ -23,18 +24,23 @@ func NewGetOrdersUseCase(
 	}
 }
 
-func (c *GetOrdersUseCase) GetAll() ([]OrderInputDTO, error) {
+func (c *GetOrdersUseCase) GetAll() ([]OrderOutputDTO, error) {
 	orders, err := c.OrderRepository.GetAll()
 	if err != nil {
 		return nil, err
 	}
 
-	var orderDTOs []OrderInputDTO
+	if orders == nil {
+		return nil, fmt.Errorf("nenhum registro encontrado")
+	}
+
+	var orderDTOs []OrderOutputDTO
 	for _, order := range orders {
-		orderDTO := OrderInputDTO{
-			ID:    order.ID,
-			Price: order.Price,
-			Tax:   order.Tax,
+		orderDTO := OrderOutputDTO{
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.Price + order.Tax,
 		}
 		orderDTOs = append(orderDTOs, orderDTO)
 	}
@@ -43,4 +49,26 @@ func (c *GetOrdersUseCase) GetAll() ([]OrderInputDTO, error) {
 	c.EventDispatcher.Dispatch(c.OrderGet)
 
 	return orderDTOs, nil
+}
+
+func (c *GetOrdersUseCase) GetByID(id string) (*OrderOutputDTO, error) {
+	order, err := c.OrderRepository.GetByID(id)
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			return nil, fmt.Errorf("nenhum registro encontrado para o ID: %s", id)
+		}
+		return nil, err
+	}
+
+	orderDTO := OrderOutputDTO{
+		ID:         order.ID,
+		Price:      order.Price,
+		Tax:        order.Tax,
+		FinalPrice: order.Price + order.Tax,
+	}
+
+	c.OrderGet.SetPayload(orderDTO)
+	c.EventDispatcher.Dispatch(c.OrderGet)
+
+	return &orderDTO, nil
 }
