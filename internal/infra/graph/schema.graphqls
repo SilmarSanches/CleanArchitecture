@@ -1,3 +1,8 @@
+type Query {
+    orders: [Order!]!
+    order(id: String!): Order
+}
+
 type Order {
     id: String!
     Price: Float!

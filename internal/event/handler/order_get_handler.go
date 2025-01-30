@@ -20,7 +20,7 @@ func NewOrderGetHandler(rabbitMQChannel *amqp.Channel) *OrderGetHandler {
 
 func (h *OrderGetHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Printf("Order get all: %v", event.GetPayload())
+	fmt.Printf("Order get: %v", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 
 	msgRabbitmq := amqp.Publishing{
