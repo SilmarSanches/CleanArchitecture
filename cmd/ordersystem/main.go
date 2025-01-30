@@ -75,7 +75,7 @@ func main() {
 	go httpServer.Start()
 
 	grpcServer := grpc.NewServer()
-	createOrderService := service.NewOrderService(*createOrderUseCase)
+	createOrderService := service.NewOrderService(*createOrderUseCase, *getOrdersUSeCase)
 	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
 	reflection.Register(grpcServer)
 
