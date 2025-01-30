@@ -51,13 +51,13 @@ func (c *GetOrdersUseCase) GetAll() ([]OrderOutputDTO, error) {
 	return orderDTOs, nil
 }
 
-func (c *GetOrdersUseCase) GetByID(id string) (*OrderOutputDTO, error) {
+func (c *GetOrdersUseCase) GetByID(id string) (OrderOutputDTO, error) {
 	order, err := c.OrderRepository.GetByID(id)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			return nil, fmt.Errorf("nenhum registro encontrado para o ID: %s", id)
+			return OrderOutputDTO{}, fmt.Errorf("nenhum registro encontrado para o ID: %s", id)
 		}
-		return nil, err
+		return OrderOutputDTO{}, err
 	}
 
 	orderDTO := OrderOutputDTO{
@@ -70,5 +70,5 @@ func (c *GetOrdersUseCase) GetByID(id string) (*OrderOutputDTO, error) {
 	c.OrderGet.SetPayload(orderDTO)
 	c.EventDispatcher.Dispatch(c.OrderGet)
 
-	return &orderDTO, nil
+	return orderDTO, nil
 }
