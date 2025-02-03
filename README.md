@@ -49,7 +49,7 @@ O servidor `rest` roda na porta 8000.
 
 ## Entrega-graphql
 
-O servidor grapjjql roda na porta 8080, onde será exibido o play-ground para execução dos testes
+O servidor grapql roda na porta 8080, onde será exibido o play-ground para execução dos testes
 
 #### create
 ```bash
