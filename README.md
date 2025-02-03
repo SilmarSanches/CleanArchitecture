@@ -14,9 +14,10 @@ Este projeto implementa as consultas de orndens em rest, graphql e gRPC.
    + 5.3 [GetByID](#getbyid) 
 6. [Comandos gRPC](#comandos-grpc)
    + 6.1 [Problemas com Evans](#problemas-evans)
-   + 6.2 [Create](#Create-grpc
+   + 6.2 [Create](#Create-grpc)
    + 6.3 [GetAll](#GetAll-grpc)
    + 6.4 [GetByID](#GetByID-grpc)
+7. [Portas](#portas)
 
 ## Docker-Compose
 Antes de iniciar a aplicação, é necessário subir o banco de dados e o rabbitmq.
@@ -50,7 +51,7 @@ O servidor `rest` roda na porta 8000.
 
 O servidor grapjjql roda na porta 8080, onde será exibido o play-ground para execução dos testes
 
-### create
+#### create
 ```bash
 mutation Create {
   createOrder(input: {
@@ -66,7 +67,7 @@ mutation Create {
 }
 ```
 
-### GetAll
+#### GetAll
 ```bash
 query GetAll {
   orders {
@@ -78,7 +79,7 @@ query GetAll {
 }
 ```
 
-### GetByID
+#### GetByID
 ```bash
 query GetByID {
   order(id: "a") {
@@ -89,25 +90,33 @@ query GetByID {
   }
 }
 ```
-### Problemas com Evans
+### Problemas Evans
 Não consegui rodar o Evans no meu conputador com sucesso, então busquei alternativas.
 Consegui tanto com postman quanto com o grpcurl.
 Abaixo os comandos para rodar o gRPC com o grpcurl.
 
-### Create-grpc
+## Comandos-grpc
+#### Create-grpc
 
 ```bash
 grpcurl -plaintext -d '{"id": "a", "price": 100.0, "tax": 10.0}' localhost:50051 pb.OrderService/CreateOrder
 ```
 
-### GetAll-grpc
+#### GetAll-grpc
 
 ```bash
 grpcurl -plaintext -d '{"id": "1"}' localhost:50051 pb.OrderService/GetOrder
 ```
 
-### GetByID-grpc
+#### GetByID-grpc
 
 ```bash 
 grpcurl -plaintext -d '{}' localhost:50051 pb.OrderService/GetAllOrders  
 ```
+
+## Portas
+
+As portas utilizadas são:
+- 8000: Rest
+- 8080: Graphql
+- 50051: gRPC
