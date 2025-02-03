@@ -4,9 +4,9 @@ Projeto de conclusão de pós-graduação (Desafio 3)
 Este projeto implementa as consultas de orndens em rest, graphql e gRPC.
 
 ## Indice
-1. [Docker-Compose](#1-docker-compose)
-2. [Migrations](#2-migrations)
-3. [Rodar a aplicação](#3-rodar-a-aplicação)
+1. [Docker-Compose](#docker-compose)
+2. [Migrations](#migrations)
+3. [Rodar a aplicação](#run-server)
 
 
 ## Docker-Compose
@@ -23,7 +23,7 @@ Após subir os recursos acima, aplique as migrations com o comando abaixo:
 make migrate
 ```
 
-## Rodar a aplicação
+## Run-Server
 Para iniciar a plicação rode o comando abaixo:
 
 ```bash
