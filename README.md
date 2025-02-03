@@ -90,12 +90,14 @@ query GetByID {
   }
 }
 ```
+
+## Comandos-grpc
+
 ### Problemas Evans
 Não consegui rodar o Evans no meu conputador com sucesso, então busquei alternativas.
 Consegui tanto com postman quanto com o grpcurl.
 Abaixo os comandos para rodar o gRPC com o grpcurl.
 
-## Comandos-grpc
 #### Create-grpc
 
 ```bash
