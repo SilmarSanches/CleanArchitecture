@@ -51,7 +51,7 @@ O servidor `rest` roda na porta 8000.
 
 O servidor grapql roda na porta 8080, onde será exibido o play-ground para execução dos testes
 
-#### create
+#### Create
 ```bash
 mutation Create {
   createOrder(input: {
