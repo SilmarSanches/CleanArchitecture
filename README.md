@@ -1,12 +1,17 @@
 # CleanArchitecture
 
+Projeto de conclusão de pós-graduação (Desafio 3)
+Este projeto implementa as consultas de orndens em rest, graphql e gRPC.
+
+## Indice
+1. [Passos para a execução](1-Passos para a execução)
+   1.1 [Docker Compose](1.1-Docker Compose)
 
 
 
 
 
-
-
+## 1-Passos para a execução
 
 ### comandos graphql:
 ```bash
