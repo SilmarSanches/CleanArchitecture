@@ -6,18 +6,17 @@ Este projeto implementa as consultas de orndens em rest, graphql e gRPC.
 ## Indice
 1. [Docker-Compose](#docker-compose)
 2. [Migrations](#migrations)
-3. [Rodar a aplicação](#run-server)
-4. [Entraga-Rest](#entrega-rest)
-5. [Entrga-Graphql](#entrega-graphql)
-   + 5.1 [Create](#create)
-   + 5.2 [GetAll](#getall)
-   + 5.3 [GetByID](#getbyid) 
-6. [Comandos gRPC](#comandos-grpc)
-   + 6.1 [Problemas com Evans](#problemas-evans)
-   + 6.2 [Create](#Create-grpc)
-   + 6.3 [GetAll](#GetAll-grpc)
-   + 6.4 [GetByID](#GetByID-grpc)
-7. [Portas](#portas)
+3. [Entraga-Rest](#entrega-rest)
+4. [Entrga-Graphql](#entrega-graphql)
+   + 4.1 [Create](#create)
+   + 4.2 [GetAll](#getall)
+   + 4.3 [GetByID](#getbyid) 
+5. [Comandos gRPC](#comandos-grpc)
+   + 5.1 [Problemas com Evans](#problemas-evans)
+   + 5.2 [Create](#Create-grpc)
+   + 5.3 [GetAll](#GetAll-grpc)
+   + 5.4 [GetByID](#GetByID-grpc)
+6. [Portas](#portas)
 
 ## Docker-Compose
 Antes de iniciar a aplicação, é necessário subir o banco de dados e o rabbitmq.
@@ -26,18 +25,13 @@ Para isso, execute o comando abaixo:
 ```bash
 docker-compose up -d
 ```
+#### :: Após este comando aguarde alguns segundos para que os recursos estejam disponíveis.
+
 ## Migrations
-Após subir os recursos acima, aplique as migrations com o comando abaixo:
+A migrations é apliada automaticamente ao rodar a aplicação, mas caso queira rodar manualmente, execute o comando abaixo:
 
 ```bash
 make migrate
-```
-
-## Run-Server
-Para iniciar a plicação rode o comando abaixo:
-
-```bash
-go run cmd/ordersystem/main.go cmd/ordersystem/wire_gen.go
 ```
 
 ## Entrega-rest
