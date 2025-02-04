@@ -6,11 +6,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"os/exec"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/devfullcycle/20-CleanArch/configs"
+	"github.com/devfullcycle/20-CleanArch/configurations"
 	"github.com/devfullcycle/20-CleanArch/internal/event/handler"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/graph"
 	"github.com/devfullcycle/20-CleanArch/internal/infra/grpc/pb"
@@ -26,12 +27,12 @@ import (
 )
 
 func main() {
-	configs, err := configs.LoadConfig("./cmd/ordersystem")
+	conf, err := configurations.LoadConfig("./")
 	if err != nil {
 		panic(err)
 	}
 
-	db, err := sql.Open(configs.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", configs.DBUser, configs.DBPassword, configs.DBHost, configs.DBPort, configs.DBName))
+	db, err := sql.Open(conf.DBDriver, fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", conf.DBUser, conf.DBPassword, conf.DBHost, conf.DBPort, conf.DBName))
 	if err != nil {
 		panic(err)
 	}
@@ -41,7 +42,7 @@ func main() {
 	cmd := exec.Command(
 		"migrate",
 		"-path=sql/migrations",
-		"-database=mysql://"+configs.DBUser+":"+configs.DBPassword+"@tcp("+configs.DBHost+":"+configs.DBPort+")/orders",
+		"-database=mysql://"+conf.DBUser+":"+conf.DBPassword+"@tcp("+conf.DBHost+":"+conf.DBPort+")/orders",
 		"-verbose",
 		"up",
 	)
@@ -51,7 +52,7 @@ func main() {
 	}
 	log.Println("Migrations executadas com sucesso.")
 
-	rabbitMQChannel := getRabbitMQChannel()
+	rabbitMQChannel := getRabbitMQChannel(conf.RabbitMQHost, conf.RabbitMQPort, conf.RabbitMQUser, conf.RabbitMQPassword)
 
 	eventDispatcher := events.NewEventDispatcher()
 	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
@@ -65,13 +66,13 @@ func main() {
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
 	getOrdersUSeCase := NewGetOrdersUseCase(db, eventDispatcher)
 
-	httpServer := webserver.NewWebServer(configs.WebServerPort)
+	httpServer := webserver.NewWebServer(conf.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
 	getOrderHandler := NewGetOrdersHandler(db, eventDispatcher)
 	httpServer.AddHandler("/orders", webOrderHandler.Create)
 	httpServer.AddHandler("/orders/get", getOrderHandler.GetByID)
 	httpServer.AddHandler("/orders/all", getOrderHandler.GetAll)
-	fmt.Println("Starting web server on port", configs.WebServerPort)
+	fmt.Println("Starting web server on port", conf.WebServerPort)
 	go httpServer.Start()
 
 	grpcServer := grpc.NewServer()
@@ -79,8 +80,8 @@ func main() {
 	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
 	reflection.Register(grpcServer)
 
-	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
+	fmt.Println("Starting gRPC server on port", conf.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", conf.GRPCServerPort))
 	if err != nil {
 		panic(err)
 	}
@@ -93,12 +94,19 @@ func main() {
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
-	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
-	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
+	fmt.Println("Starting GraphQL server on port", conf.GraphQLServerPort)
+	http.ListenAndServe(":"+conf.GraphQLServerPort, nil)
 }
 
-func getRabbitMQChannel() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+func getRabbitMQChannel(host, port, user, password string) *amqp.Channel {
+	url := fmt.Sprintf(
+		"amqp://%s:%s@%s:%s/",
+		os.Getenv("RABBITMQ_USER"),
+		os.Getenv("RABBITMQ_PASSWORD"),
+		os.Getenv("RABBITMQ_HOST"),
+		os.Getenv("RABBITMQ_PORT"),
+	)
+	conn, err := amqp.Dial(url)
 	if err != nil {
 		panic(err)
 	}

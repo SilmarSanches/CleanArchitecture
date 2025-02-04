@@ -107,7 +107,7 @@ grpcurl -plaintext -d '{"id": "a", "price": 100.0, "tax": 10.0}' localhost:50051
 #### GetAll-grpc
 
 ```bash
-grpcurl -plaintext -d '{"id": "1"}' localhost:50051 pb.OrderService/GetOrder
+grpcurl -plaintext -d '{"id": "a"}' localhost:50051 pb.OrderService/GetOrder
 ```
 
 #### GetByID-grpc
